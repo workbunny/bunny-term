@@ -5,18 +5,27 @@ declare(strict_types=1);
 
 namespace Bunny\Term;
 
-class Control
+class Base
 {
     private \FFI $ffi;
 
     public function __construct()
     {
-        $this->ffi = \FFI::cdef(
-            'bool isKeyPressed(int key);',
-            dirname(__DIR__) . DIRECTORY_SEPARATOR . "lib" . DIRECTORY_SEPARATOR . "keyboard.dll"
-        );
+        // 判断是否是windows
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->ffi = \FFI::cdef(
+                'bool isKeyPressed(int key);',
+                dirname(__DIR__) . DIRECTORY_SEPARATOR . "lib" . DIRECTORY_SEPARATOR . "keyboard.dll"
+            );
+        }
     }
 
+    /**
+     * 检测按键是否按下
+     *
+     * @param integer $key
+     * @return boolean
+     */
     public function isKeyPressed(int $key): bool
     {
         return $this->ffi->isKeyPressed($key);
@@ -133,28 +142,6 @@ class Control
     public function hideCursor(): void
     {
         echo "\x1b[?25l";
-        flush();
-    }
-
-    /**
-     * 重置终端状态
-     *
-     * @return void
-     */
-    public function reset(): void
-    {
-        echo "\x1b[0m";
-        flush();
-    }
-
-    /**
-     * 清除整个终端窗口和所有保存的行
-     *
-     * @return void
-     */
-    public function clear(): void
-    {
-        echo "\x1b[2J\x1b[3J";
         flush();
     }
 }

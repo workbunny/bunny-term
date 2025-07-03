@@ -2,27 +2,31 @@
 
 require dirname(__DIR__) . "/vendor/autoload.php";
 
-use Bunny\Term\Color;
 use Bunny\Term\Tui;
 
+// 示例
 $tui = new Tui();
-$tui->var["num"] = 0;
-$tui->event(function (Tui $ui) {
-    if ($ui->control->isKeyPressed(65)) {
-        $ui->var["num"]++;
-    }
-    if ($ui->control->isKeyPressed(27)) {
-        $ui->clean();
+
+// 事件
+$tui->event(function (array $var) {
+    // 点击A键盘
+    if ($var["control"]->isKeyPressed(65)) {
     }
 });
-
-$tui->frame(function (Tui $ui) {
-    $ui->control->hideCursor();
-    $ui->control->setCursorPosition($ui->var["num"], 10);
-    echo Color::rgb(255, 0, 0, "你好");
-    $ui->control->setCursorPosition(0, 0);
+// 绘画
+$tui->frame(function (array $var) {
+    // 清除
+    $var["draw"]->clear();
+    // 输出内容
+    $var["draw"]->bgColor(63, 81, 181); // 背景色
+    $var["draw"]->rect(20, 6, 41, 10); // 矩形
+    $var["draw"]->text(24, 8, "hello from php!"); // 文本
+    // 光标位置设置
+    $var["control"]->setCursorPosition(0, 0);
+    // 重置
+    $var["draw"]->reset();
 });
-
+// 等待
 $tui->wait();
 
 // /**

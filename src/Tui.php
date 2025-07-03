@@ -5,7 +5,8 @@ declare(strict_types=1);
 
 namespace Bunny\Term;
 
-use Bunny\Term\Control;
+use Bunny\Term\Base;
+use Bunny\Term\Draw;
 
 class Tui
 {
@@ -38,22 +39,22 @@ class Tui
     private $frameCallback;
 
     /**
-     * 终端控制类
-     *
-     * @var Control
-     */
-    public Control $control;
-
-    /**
      * 构造函数
      */
     public function __construct()
     {
-        $this->control = new Control();
+        $this->var["control"] = new Base();
+        $this->var["draw"] = new Draw();
         $this->isRun = true;
         register_shutdown_function([$this, 'resetTerminal']);
     }
 
+    /**
+     * 事件
+     *
+     * @param callable $func
+     * @return self
+     */
     public function event(callable $func): self
     {
         $this->eventCallback = \Closure::fromCallable($func);
@@ -79,24 +80,27 @@ class Tui
      */
     public function wait(): void
     {
-        $this->control->hideCursor();
-
+        $this->var["control"]->hideCursor();
         while ($this->isRun) {
             ob_start();
             try {
-                $this->control->clear();
+                // 默认点击esc退出
+                if ($this->var["control"]->isKeyPressed(27)) {
+                    $this->clean();
+                }
                 // 处理事件
                 if ($this->eventCallback) {
-                    ($this->eventCallback)($this);
+                    ($this->eventCallback)($this->var);
                 }
                 // 渲染帧
                 if ($this->frameCallback) {
-                    ($this->frameCallback)($this);
+                    ($this->frameCallback)($this->var);
                 }
             } catch (\Throwable $e) {
                 ob_end_clean();
                 throw new \Exception($e->getMessage());
             }
+            // file_put_contents("test.txt", ob_get_clean());
             echo ob_get_clean();
             usleep(50_000);
         }
@@ -117,9 +121,9 @@ class Tui
     // 重置终端状态（异常退出时自动调用）
     public function resetTerminal(): void
     {
-        $this->control->clear();
-        $this->control->reset();
-        $this->control->showCursor();
-        $this->control->setCursorPosition(0, 0);
+        $this->var["draw"]->clear();
+        $this->var["draw"]->reset();
+        $this->var["control"]->showCursor();
+        $this->var["control"]->setCursorPosition(0, 0);
     }
 }
