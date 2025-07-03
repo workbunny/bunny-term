@@ -1,0 +1,30 @@
+{
+    "name": "bunny/term",
+    "description": "php 终 端 操 作 库",
+    "keywords": [
+        "terminal",
+        "tui",
+        "php"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kingbes",
+            "email": "1164601554@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bunny\\Term\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}
