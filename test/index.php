@@ -3,28 +3,30 @@
 require dirname(__DIR__) . "/vendor/autoload.php";
 
 use Bunny\Term\Tui;
+use Bunny\Term\Event;
 
 // 示例
 $tui = new Tui();
 
-// 事件
-$tui->event(function (array $var) {
-    // 点击A键盘
-    if ($var["control"]->isKeyPressed(65)) {
-    }
-});
+// 给事件定义新的参数
+$tui->event->num = 24;
+
 // 绘画
-$tui->frame(function (array $var) {
+$tui->frame(function (Event $e) {
+    // 点击A键盘
+    if ($e->keyboard->isKeyPressed(65)) {
+        $e->num++;
+    }
     // 清除
-    $var["draw"]->clear();
+    $e->draw->clear();
     // 输出内容
-    $var["draw"]->bgColor(63, 81, 181); // 背景色
-    $var["draw"]->rect(20, 6, 41, 10); // 矩形
-    $var["draw"]->text(24, 8, "hello from php!"); // 文本
+    $e->draw->bgColor(63, 81, 181); // 背景色
+    $e->draw->rect(20, 6, 41, 10); // 矩形
+    $e->draw->text($e->num, 8, "hello from php!"); // 文本
     // 光标位置设置
-    $var["control"]->setCursorPosition(0, 0);
+    $e->control->setCursorPosition(0, 0);
     // 重置
-    $var["draw"]->reset();
+    $e->draw->reset();
 });
 // 等待
 $tui->wait();

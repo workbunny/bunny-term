@@ -5,32 +5,11 @@ declare(strict_types=1);
 
 namespace Bunny\Term;
 
-class Base
+/**
+ * 终端控制类
+ */
+class Control
 {
-    private \FFI $ffi;
-
-    public function __construct()
-    {
-        // 判断是否是windows
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->ffi = \FFI::cdef(
-                'bool isKeyPressed(int key);',
-                dirname(__DIR__) . DIRECTORY_SEPARATOR . "lib" . DIRECTORY_SEPARATOR . "keyboard.dll"
-            );
-        }
-    }
-
-    /**
-     * 检测按键是否按下
-     *
-     * @param integer $key
-     * @return boolean
-     */
-    public function isKeyPressed(int $key): bool
-    {
-        return $this->ffi->isKeyPressed($key);
-    }
-
     /**
      * 获取终端尺寸
      *
@@ -135,7 +114,6 @@ class Base
 
     /**
      * 隐藏光标
-
      *
      * @return void
      */

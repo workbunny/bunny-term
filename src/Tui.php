@@ -5,8 +5,7 @@ declare(strict_types=1);
 
 namespace Bunny\Term;
 
-use Bunny\Term\Base;
-use Bunny\Term\Draw;
+use Bunny\Term\Event;
 
 class Tui
 {
@@ -18,18 +17,11 @@ class Tui
     private bool $isRun;
 
     /**
-     * 终端变量
-     *
-     * @var array
-     */
-    public array $var = [];
-
-    /**
      * 事件
      *
-     * @var callable
+     * @var Event
      */
-    private $eventCallback;
+    public Event $event;
 
     /**
      * 绘画
@@ -43,22 +35,9 @@ class Tui
      */
     public function __construct()
     {
-        $this->var["control"] = new Base();
-        $this->var["draw"] = new Draw();
+        $this->event = new Event();
         $this->isRun = true;
         register_shutdown_function([$this, 'resetTerminal']);
-    }
-
-    /**
-     * 事件
-     *
-     * @param callable $func
-     * @return self
-     */
-    public function event(callable $func): self
-    {
-        $this->eventCallback = \Closure::fromCallable($func);
-        return $this;
     }
 
     /**
@@ -80,27 +59,25 @@ class Tui
      */
     public function wait(): void
     {
-        $this->var["control"]->hideCursor();
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            register_shutdown_function([$this->event->keyboard, 'restore']);
+        }
+        $this->event->control->hideCursor();
         while ($this->isRun) {
             ob_start();
             try {
                 // 默认点击esc退出
-                if ($this->var["control"]->isKeyPressed(27)) {
+                if ($this->event->keyboard->isKeyPressed(27)) {
                     $this->clean();
-                }
-                // 处理事件
-                if ($this->eventCallback) {
-                    ($this->eventCallback)($this->var);
                 }
                 // 渲染帧
                 if ($this->frameCallback) {
-                    ($this->frameCallback)($this->var);
+                    ($this->frameCallback)($this->event);
                 }
             } catch (\Throwable $e) {
                 ob_end_clean();
                 throw new \Exception($e->getMessage());
             }
-            // file_put_contents("test.txt", ob_get_clean());
             echo ob_get_clean();
             usleep(50_000);
         }
@@ -121,9 +98,9 @@ class Tui
     // 重置终端状态（异常退出时自动调用）
     public function resetTerminal(): void
     {
-        $this->var["draw"]->clear();
-        $this->var["draw"]->reset();
-        $this->var["control"]->showCursor();
-        $this->var["control"]->setCursorPosition(0, 0);
+        $this->event->draw->clear();
+        $this->event->draw->reset();
+        $this->event->control->showCursor();
+        $this->event->control->setCursorPosition(0, 0);
     }
 }

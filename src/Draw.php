@@ -5,10 +5,21 @@ declare(strict_types=1);
 
 namespace Bunny\Term;
 
-use Bunny\Term\Base;
+use Bunny\Term\Control;
 
-class Draw extends Base
+class Draw extends Control
 {
+    /**
+     * 字符粗体
+     *
+     * @return void
+     */
+    public function bold()
+    {
+        echo "\x1b[1m";
+        flush();
+    }
+
     /**
      * 绘制点
      *
@@ -83,6 +94,44 @@ class Draw extends Base
     }
 
     /**
+     * 绘制虚线
+     *
+     * @param integer $x1 起点横坐标
+     * @param integer $y1 起点纵坐标
+     * @param integer $x2 终点横坐标
+     * @param integer $y2 终点纵坐标
+     * @return void
+     */
+    public function dashedLine(int $x1, int $y1, int $x2, int $y2): void
+    {
+        $x11 = $x1;
+        $x22 = $x2;
+        $y11 = $y1;
+        $y22 = $y2;
+        $sx = $x11 < $x22 ? 1 : -1;
+        $sy = $y11 < $y22 ? 1 : -1;
+        $dx = abs($x22 - $x11);
+        $dy = abs($y22 - $y11);
+        $err = $dx + $dy;
+        $i = 0;
+        do {
+            if ($i % 2 == 0) {
+                $this->point($x11, $y11);
+            }
+            $e2 = 2 * $err;
+            if ($e2 >= $dy) {
+                $err += $dy;
+                $x11 += $sx;
+            }
+            if ($e2 <= $dx) {
+                $err += $dx;
+                $y11 += $sy;
+            }
+            $i++;
+        } while ($x11 === $x2 && $y11 === $y22);
+    }
+
+    /**
      * 绘制矩形
      *
      * @param integer $x1 左上角横坐标
@@ -106,6 +155,40 @@ class Draw extends Base
         }
         for ($y_pos = $min_y; $y_pos <= $max_y; $y_pos++) {
             $this->line($x1, $y_pos, $x2, $y_pos);
+        }
+    }
+
+    /**
+     * 绘制虚线矩形
+     *
+     * @param integer $x1 左上角横坐标
+     * @param integer $y1 左上角纵坐标
+     * @param integer $x2 右下角横坐标
+     * @param integer $y2 右下角纵坐标
+     * @return void
+     */
+    public function dashedRect(int $x1, int $y1, int $x2, int $y2): void
+    {
+        if ($y1 === $y2 || $x1 === $x2) {
+            $this->dashedLine($x1, $y1, $x2, $y2);
+            return;
+        }
+        $min_x = min($x1, $x2);
+        $min_y = min($y1, $y2);
+        $max_x = max($x1, $x2);
+        $max_y = max($y1, $y2);
+
+        $this->dashedLine($min_x, $min_y, $max_x, $min_y);
+        $this->dashedLine($min_x, $min_y, $min_x, $max_y);
+        if (($max_y - $min_y) & 1 == 0) {
+            $this->dashedLine($min_x, $max_y, $max_x, $max_y);
+        } else {
+            $this->dashedLine($min_x + 1, $max_y, $max_x, $max_y);
+        }
+        if (($max_x - $min_x) & 1 == 0) {
+            $this->dashedLine($max_x, $min_y, $max_x, $max_y);
+        } else {
+            $this->dashedLine($max_x, $min_y + 1, $max_x, $max_y);
         }
     }
 
