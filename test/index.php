@@ -4,8 +4,8 @@
 
 require dirname(__DIR__) . "/vendor/autoload.php";
 
-use Bunny\Term\Tui;
-use Bunny\Term\KeyboardKey;
+use Workbunny\Term\Tui;
+use Workbunny\Term\KeyboardKey;
 
 // 示例
 Tui::init(); // 初始化

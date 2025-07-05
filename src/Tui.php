@@ -3,9 +3,9 @@
 // 严格模式
 declare(strict_types=1);
 
-namespace Bunny\Term;
+namespace Workbunny\Term;
 
-use Bunny\Term\KeyboardKey;
+use Workbunny\Term\KeyboardKey;
 
 /**
  * 终端UI类

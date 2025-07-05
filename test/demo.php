@@ -3,7 +3,7 @@
 // 终端绘画
 require dirname(__DIR__) . "/vendor/autoload.php";
 
-use Bunny\Term\Tui;
+use Workbunny\Term\Tui;
 
 Tui::init(); // 初始化
 Tui::setTitle("奔跑的兔子"); // 标题

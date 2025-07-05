@@ -1,5 +1,5 @@
 {
-    "name": "bunny/term",
+    "name": "workbunny/term",
     "description": "php 终 端 操 作 库",
     "keywords": [
         "terminal",
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Bunny\\Term\\": "src/"
+            "Workbunny\\Term\\": "src/"
         }
     },
     "minimum-stability": "dev",

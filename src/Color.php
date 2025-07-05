@@ -3,7 +3,7 @@
 // 严格模式
 declare(strict_types=1);
 
-namespace Bunny\Term;
+namespace Workbunny\Term;
 
 class Color
 {
