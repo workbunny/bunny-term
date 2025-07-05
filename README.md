@@ -7,9 +7,9 @@
 **<p align="center">🐇 PHP-兔 子 终 端 库 🐇</p>**
 
 <!-- 图居中 -->
-<center>
+<p align="center">
 <img src="./bunny.gif"/>
-</center>
+</p>
 
 ## 依赖
 
